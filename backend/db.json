@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1746819555563,
+    "description": "Accident de voiture près de l'école primaire",
+    "latitude": "34.2704",
+    "longitude": "-6.5803",
+    "date": "2025-05-09T12:00:00Z"
+  },
+  {
+    "id": 1746819657733,
+    "description": "Inondation près de la station de tramway",
+    "latitude": "34.2434315",
+    "longitude": "-6.5440483",
+    "date": "2025-05-09T13:00:00Z"
+  },
+  {
+    "id": 1746819700000,
+    "description": "Feu de poubelles à proximité du marché",
+    "latitude": "34.2680",
+    "longitude": "-6.5768",
+    "date": "2025-05-09T14:00:00Z"
+  },
+  {
+    "id": 1746819800000,
+    "description": "Accident de moto sur l'avenue Mohammed V",
+    "latitude": "34.2740",
+    "longitude": "-6.5785",
+    "date": "2025-05-09T15:00:00Z"
+  }
+  
+]

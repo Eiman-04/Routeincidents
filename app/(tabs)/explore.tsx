@@ -1,110 +1,189 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import axios from 'axios';
+import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
+interface Incident {
+  id: number;
+  latitude: string;
+  longitude: string;
+  description: string;
+  date: string;
 }
 
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
+}
+
+const IncidentsMap: React.FC = () => {
+  const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [location, setLocation] = useState<LocationCoords | null>(null);
+
+  const getUserLocation = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission refusée', 'La permission de localisation est nécessaire.');
+      return;
+    }
+
+    const userLocation = await Location.getCurrentPositionAsync({});
+    setLocation({
+      latitude: userLocation.coords.latitude,
+      longitude: userLocation.coords.longitude,
+    });
+  };
+
+  const getDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number => {
+    const radlat1 = (Math.PI * lat1) / 180;
+    const radlat2 = (Math.PI * lat2) / 180;
+    const theta = lon1 - lon2;
+    const radtheta = (Math.PI * theta) / 180;
+    let dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    dist = Math.acos(Math.min(Math.max(dist, -1), 1)); // sécurité pour éviter NaN
+    dist = (dist * 180) / Math.PI;
+    dist *= 60 * 1.1515 * 1.609344;
+    return dist;
+  };
+
+  const handleResolveIncident = (incidentId: number) => {
+    Alert.alert('Incident résolu ?', 'Voulez-vous supprimer cet incident ?', [
+      { text: 'Annuler', style: 'cancel' },
+      {
+        text: 'Supprimer',
+        onPress: () => {
+          axios
+            .delete(`http://192.168.1.176:3000/incidents/${incidentId}`)
+            .then(() => {
+              setIncidents(prev => prev.filter(i => i.id !== incidentId));
+              Alert.alert('Succès', "L'incident a été supprimé.");
+            })
+            .catch(error => {
+              console.error('Erreur lors de la suppression', error);
+              Alert.alert('Erreur', "Impossible de supprimer l'incident.");
+            });
+        },
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    axios
+      .get('http://192.168.1.176:3000/incidents')
+      .then(response => setIncidents(response.data))
+      .catch(error => {
+        console.error('Erreur de chargement des incidents', error);
+        Alert.alert('Erreur', 'Impossible de charger les incidents');
+      });
+  }, []);
+
+  useEffect(() => {
+    if (location) {
+      incidents.forEach(incident => {
+        const distance = getDistance(
+          location.latitude,
+          location.longitude,
+          parseFloat(incident.latitude),
+          parseFloat(incident.longitude)
+        );
+        if (distance < 1) {
+          Alert.alert('🚨 Incident proche !', `Proximité : ${incident.description}`);
+        }
+      });
+    }
+  }, [location, incidents]);
+
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>🗺️ Carte des Incidents</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 34.2704,
+          longitude: -6.5803,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}
+        showsUserLocation
+      >
+        {incidents.map(incident => (
+          <Marker
+            key={incident.id}
+            coordinate={{
+              latitude: parseFloat(incident.latitude),
+              longitude: parseFloat(incident.longitude),
+            }}
+            title={incident.description}
+            description={`Date : ${incident.date}`}
+            onCalloutPress={() => handleResolveIncident(incident.id)}
+          />
+        ))}
+      </MapView>
+
+      <TouchableOpacity
+        style={[styles.callButton, { backgroundColor: '#D32F2F', bottom: 100 }]}
+        onPress={() => Linking.openURL('tel:19')}
+      >
+        <Text style={styles.callButtonText}>📞 Police</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.callButton, { backgroundColor: '#1976D2', bottom: 40 }]}
+        onPress={() => Linking.openURL('tel:15')}
+      >
+        <Text style={styles.callButtonText}>🚑 Ambulance</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default IncidentsMap;
+
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: '#E3F2FD',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    padding: 12,
+    textAlign: 'center',
+    color: '#0D47A1',
+    backgroundColor: '#BBDEFB',
+    borderBottomWidth: 1,
+    borderColor: '#90CAF9',
+  },
+  map: {
+    flex: 1,
+  },
+  callButton: {
+    position: 'absolute',
+    left: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+  },
+  callButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

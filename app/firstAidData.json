@@ -1,0 +1,112 @@
+[
+  {
+    "id": "1",
+    "title": "Brûlures",
+    "icon": "fire",
+    "steps": [
+      "Refroidir la brûlure avec de l'eau froide (pas glacée) pendant au moins 10 minutes.",
+      "Ne pas appliquer de crèmes ou de pommades.",
+      "Couvrir la brûlure avec un pansement stérile.",
+      "Appeler un médecin si la brûlure est grave."
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Fracture",
+    "icon": "bone",
+    "steps": [
+      "Immobiliser la zone fracturée pour éviter de déplacer les os.",
+      "Appliquer une compresse froide pour réduire l'enflure.",
+      "Ne pas essayer de réaligner les os.",
+      "Appeler une ambulance pour un transport médical."
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Arrêt Cardiaque",
+    "icon": "heart-pulse",
+    "steps": [
+      "Vérifier que la personne est inconsciente et ne respire pas.",
+      "Appeler immédiatement les secours (112 ou numéro local).",
+      "Commencer la réanimation cardio-pulmonaire (RCP).",
+      "Alterner entre compressions thoraciques et insufflations."
+    ]
+  },
+  {
+    "id": "4",
+    "title": "Noyade",
+    "icon": "waves",
+    "steps": [
+      "Sortir la personne de l'eau immédiatement si possible.",
+      "Vérifier la respiration.",
+      "Si la personne ne respire pas, commencer la réanimation cardio-pulmonaire.",
+      "Appeler les secours et suivre leurs instructions."
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Piqûre de Serpent",
+    "icon": "snake",
+    "steps": [
+      "Rester calme et limiter les mouvements de la personne.",
+      "Appeler immédiatement les secours.",
+      "Ne pas essayer de sucer le venin.",
+      "Garder la personne allongée et ne pas lui donner à boire."
+    ]
+  },
+  {
+    "id": "6",
+    "title": "Étouffement",
+    "icon": "emoticon-dead-outline",
+    "steps": [
+      "Demander à la personne si elle peut parler ou tousser.",
+      "Si elle ne peut pas, effectuer la manœuvre de Heimlich.",
+      "Appeler les secours si l'objet ne sort pas.",
+      "Si elle perd connaissance, commencer la RCP."
+    ]
+  },
+  {
+    "id": "7",
+    "title": "Coup de chaleur",
+    "icon": "weather-sunny-alert",
+    "steps": [
+      "Mettre la personne à l’ombre ou dans un endroit frais.",
+      "Retirer les vêtements superflus.",
+      "Appliquer des linges humides ou vaporiser de l’eau fraîche.",
+      "Appeler les secours si la personne est confuse ou inconsciente."
+    ]
+  },
+  {
+    "id": "8",
+    "title": "Crise d'épilepsie",
+    "icon": "brain",
+    "steps": [
+      "Ne pas retenir la personne ni mettre quoi que ce soit dans sa bouche.",
+      "Retirer les objets dangereux autour d’elle.",
+      "Placer la personne en position latérale de sécurité après la crise.",
+      "Appeler les secours si la crise dure plus de 5 minutes."
+    ]
+  },
+  {
+    "id": "9",
+    "title": "Intoxication",
+    "icon": "bottle-tonic-outline",
+    "steps": [
+      "Identifier la substance ingérée si possible.",
+      "Ne pas faire vomir la personne sauf indication médicale.",
+      "Allonger la personne sur le côté si elle est consciente.",
+      "Appeler le centre antipoison ou les secours immédiatement."
+    ]
+  },
+  {
+    "id": "10",
+    "title": "Morsure de chien",
+    "icon": "dog",
+    "steps": [
+      "Nettoyer la plaie à l’eau et au savon.",
+      "Couvrir avec une compresse propre.",
+      "Surveiller pour des signes d'infection.",
+      "Consulter un médecin pour prévenir la rage ou le tétanos."
+    ]
+  }
+]

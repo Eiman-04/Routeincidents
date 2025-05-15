@@ -7,21 +7,24 @@
     "icon": "./assets/images/icon.png",
     "scheme": "newsmeteoapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "platforms": ["ios", "android"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourname.newsmeteoapp",
+      "buildNumber": "1.0.0",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.YOUR_ID"
+        }
+      }
     },
     "android": {
+      "package": "com.yourname.newsmeteoapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -35,8 +38,11 @@
         }
       ]
     ],
-    "experiments": {
-      "typedRoutes": true
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "51ebd65c-5f0f-4e27-86ed-99cede9d6f83"
+      }
     }
   }
 }
